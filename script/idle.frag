@@ -120,8 +120,9 @@ float threshold  = mix(0.96, 0.60, curved);                // 0.96 → 0.80 (inv
 float active     = step(threshold, seed2);        // ~60% of blocks are active
   float reach    = u_idle * 4.0;
   float envelope = exp(-dist / max(reach, 1.0));  // full strength at click, falls off with distance
+  float push_breathe = sin(u_idle * 0.4) * 0.1 + 0.1;
 
-float magnitude = growth * (0.5 + seed) * 0.05 * active * envelope * (sin(u_idle * 0.4) * 0.1 + 0.1);
+float magnitude = growth * (0.5 + seed) * 0.05 * active * envelope * push_breathe;
 
 vec2 perp      = vec2(-dir.y, dir.x);                    // perpendicular to radial direction
 float sway     = (seed - 0.5) * 0.4;                     // random lateral bias per block
