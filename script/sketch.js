@@ -27,7 +27,7 @@ const menu_title_text_en = "Diaries of Crocodiles: Lesbian Literature in Chinese
 const back_btn_en = "&lt;&lt;&nbsp;&nbsp;Back";
 const about_btn_en = "About";
 
-const menu_title_text_cn = "鳄鱼的手记：中文女同性恋文学";
+const menu_title_text_cn = "鳄鱼的手记：中文女同文学";
 const back_btn_cn = "&lt;&lt;&nbsp;&nbsp;返回";
 const about_btn_cn = "关于";
 
