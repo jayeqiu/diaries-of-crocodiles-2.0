@@ -184,43 +184,16 @@ i {
         padding: 1.5rem 30px 3rem 50px;
         text-align: left;
         z-index: 100;
+        mix-blend-mode: difference;
         /* pointer-events: none; */
         /* overflow: scroll; */
 
-        #raindrop-container {
-            position: absolute;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-
-            z-index: 200;
-
-            mix-blend-mode: difference;
-
-            .char {
-                position: absolute;
-                color: rgb(127, 127, 127);
-                background-color: rgb(255, 255, 255);
-                border-radius: 0.5rem;
-                font-size: 1rem;
-
-                transform: translate(0, 0);
-                opacity: 0;
-
-                transition: 
-                    transform 2.8s  cubic-bezier(0.3, 0.2, 0.4, 1),
-                    opacity 1.4s;
-            }
-
-            .char.drop {
-                opacity: 1;
-            }
-        }
 
         #title {
             width: 316px;
             margin-right: 2rem;
             margin-bottom: 5.2rem;
+            color: #ffffff;
         }
 
         #reader {
@@ -237,7 +210,7 @@ i {
             }
 
             #reader-content > .content-text-1 {
-                color: #000000;
+                color: #ffffff;
                 font-size: 0.9rem;
                 line-height: 1.4rem;
                 padding-bottom: 1.4rem;
@@ -245,7 +218,7 @@ i {
 
             #reader-content > .content-text-2 {
                 border-left: 0.75px solid #c5c5c5;
-                color: #000000;
+                color: #ffffff;
                 padding-left: 3rem;
                 font-size: 0.8rem;
                 line-height: 1.4rem;
@@ -253,7 +226,6 @@ i {
             }
 
             #reader-content > .content-text-3 {
-                
                 border-left: 0.75px solid #c5c5c5;
                 
                 margin-bottom: 1.4rem;
@@ -262,8 +234,14 @@ i {
                 font-size: 0.8rem;
                 line-height: 1.4rem;
 
-                color: #898989;
+                color: #7e7e7e;
+
+                a {
+                    color: #ffffff;
+                }
             }
+
+            
         }
 
         @media (width >= 1030px) {
@@ -321,4 +299,3 @@ i {
         }
     }
 }
-

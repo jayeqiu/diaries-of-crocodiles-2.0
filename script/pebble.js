@@ -1,21 +1,22 @@
 const _pu = 80;
 
 class Pebble {
-    constructor(idx) {
+    constructor(idx, x = Pebble.rand(idx), y = Pebble.rand(idx + 1), s = 1.2) {
         // this.type = random(["rock", "paper", "scissors"]);
         this.type = "rock";
-        this.rndX = random(-1.6, 1.6);
-        this.rndY = random(-1.6, 1.6);
-        this.stretchX = random(0.4, 1.6);
-        this.stretchY = random(0.4, 1.6);
-        this.x = 0;
-        this.y = 0;
+        this.rndX = Pebble.rand(idx) * 4 - 2;
+        this.rndY = Pebble.rand(idx + 1) * 4 - 2;
+        this.stretchX = Pebble.rand(idx + 2) * 1.1 + 0.2;
+        this.stretchY = Pebble.rand(idx + 3) * 1.1 + 0.2;
+        this.x = x;
+        this.y = y;
+        this.scale = s;
         // this.x1 = this.x + _pu * 2;
         // this.y1 = this.y - _pu * 2;
         this.idx = idx;
     }
 
-    draw(g, x, y, s = 1.2) {
+    draw(g, x = this.x, y = this.y, s = this.scale) {
         g.push();
 
         this.x = x;
@@ -35,31 +36,31 @@ class Pebble {
                 
                 // Apply skew via raw canvas transform
                 // The skew matrix: [1, tan(skewY), tan(skewX), 1, 0, 0]
-                let rotation = map(mouseX, 0, width, -0.17, 0.17);
-                let skewX = map(mouseX, 0, width, -0.5, 0.5);
-                let skewY = map(mouseY, 0, height, -0.5, 0.5);
+                let rotation = map(mouseX, 0, g.width, -0.17, 0.17);
+                let skewX = map(mouseX, 0, g.width, -0.5, 0.5);
+                let skewY = map(mouseY, 0, g.height, -0.5, 0.5);
 
                 g.rotate(rotation);
 
-                // drawingContext.transform(
-                //     this.stretchX,                         // scale X
-                //     this.stretchY * Math.tan(skewY) * this.rndX,       // skewY scaled
-                //     this.stretchX * Math.tan(skewX) * this.rndY,       // skewX scaled
-                //     this.stretchY,                         // scale Y
-                //     0, 
-                //     cos(mouseX / 110)
-                // );
-                g.scale(this.stretchX, this.stretchY);
-                g.applyMatrix(
-                    this.stretchX,                              // scaleX
-                    this.stretchY * tan(skewY) * this.rndX,     // skewY
-                    0,                                          // (z row, leave 0 for 2D-like transforms)
-                    this.stretchX * tan(skewX) * this.rndY,     // skewX
-                    this.stretchY,                              // scaleY
-                    0,
-                    0, 0, 1, 0,
-                    0, cos(mouseX / 110), 0, 1               // tx=0, ty=cos(mouseX/110)
+                g.drawingContext.transform(
+                    this.stretchX,                         // scale X
+                    this.stretchY * Math.tan(skewY) * this.rndX,       // skewY scaled
+                    this.stretchX * Math.tan(skewX) * this.rndY,       // skewX scaled
+                    this.stretchY,                         // scale Y
+                    0, 
+                    Math.cos(mouseX / 110)
                 );
+                // g.scale(this.stretchX, this.stretchY);
+                // g.applyMatrix(
+                //     this.stretchX,                              // scaleX
+                //     this.stretchY * tan(skewY) * this.rndX,     // skewY
+                //     0,                                          // (z row, leave 0 for 2D-like transforms)
+                //     this.stretchX * tan(skewX) * this.rndY,     // skewX
+                //     this.stretchY,                              // scaleY
+                //     0,
+                //     0, 0, 1, 0,
+                //     0, cos(mouseX / 110), 0, 1               // tx=0, ty=cos(mouseX/110)
+                // );
                 g.fill(50);
                 // Draw ellipse at origin (since we already translated)
                 g.ellipse(0, 0, _pu * s,  _pu * s);
@@ -77,23 +78,34 @@ class Pebble {
                 break;
         }
         
-        pop();
+        g.pop();
     }
 
-    drawFocus() {
-        push();
+    static drawSplash(g, idx) {
+        for (let i = 0; i < 20; i++) {
+            let p = new Pebble(i);
+            let x = Pebble.rand(idx + i) * g.width;
+            let y = Pebble.rand(idx + i + i) * g.height;
+            p.draw(g, x, y, Pebble.rand(idx + i + 2) * 0.5);
+        }
+
+    }
+
+    static rand(seed) {
+        const x = Math.sin(seed) * 43758.5453;
+        return x - Math.floor(x);
+    }
+
+    drawFocus(g) {
 
         let x = (width - 60) / 4 + 30;
         let y = (height - 60) / 2 - 10;
         let s = 3.6;
-        fill(255, 255, 255, 40);
-        stroke(1, 1, 1, 40);
-        strokeWeight(1);
-        rectMode(CENTER);
         
-        this.draw(x, y, 1.5);
+        this.draw(g, x, y, 1.5);
 
-        pop();
+        Pebble.drawSplash(g, this.idx);
+
     }
 
     hovered(mx, my) {

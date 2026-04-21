@@ -50,6 +50,10 @@ let lastMouseX, lastMouseY;
 let clickMouseX = 0, clickMouseY = 0;
 let clickTime = -999; 
 
+let pmvel;
+
+let inkdots = [];
+
 function preload() {
     
     data = loadJSON('./public/contents/data.json');    
@@ -68,7 +72,7 @@ function setup() {
     createCanvas(w, h, WEBGL);
 
     // Off-screen graphics layer where your actual scene is drawn (no WEBGL - just 2D)
-    p5Layer = createGraphics(windowWidth, windowHeight);
+    p5Layer = createGraphics(w, h);
 
     works = data.works;
     about_content = data.about;
@@ -92,8 +96,12 @@ function setup() {
     }
 
     lastActivityTime = millis();
-    lastMouseX = width/2;
-    lastMouseY = height/2;
+    lastMouseX = p5Layer.width/2;
+    lastMouseY = p5Layer.height/2;
+
+    pmvel = createVector(0,0);
+
+    
 
     document.addEventListener('scroll', e => recordActivity(e));
     document.addEventListener('keydown', e => recordActivity(e));
@@ -101,6 +109,7 @@ function setup() {
         recordActivity(e);
         let obj = pointedObject(mouseX, mouseY);
         if (obj !== null) {
+            console.log(`Clicked on object with index ${obj.idx}`);
             loadContent(obj.idx);
         }
     });
@@ -117,14 +126,30 @@ function setup() {
     });
     document.addEventListener('mousemove', e => {
         recordActivity(e);
-        let obj = pointedObject(mouseX, mouseY);
-        showLabel(obj);
+
+        // calculate mouse velocity 
+        if (focusMode) {
+            let mousespeed = dist(mouseX, mouseY, pmouseX, pmouseY);
+            let cpos = createVector(mouseX, mouseY);
+            let ppos = createVector(pmouseX, pmouseY);
+            let mvel = cpos.sub(ppos);
+            
+            let macc = mvel.sub(pmvel);
+            
+            if (macc.mag() > 40 && mvel.mag() > pmvel.mag() || mvel.mag() > 60) {
+                console.log("splash");
+                splashSketch(macc, mvel, pmvel, mousespeed, p5Layer);
+            }
+            
+        } else {
+            let obj = pointedObject(mouseX, mouseY);
+            showLabel(obj);
+        }
     });
 
 }
 
 function draw() {
-    
     
     // 1. Draw your scene into the off-screen 2D layer
     drawScene(p5Layer);
@@ -157,7 +182,7 @@ function draw() {
 }
 
 function drawScene(g) {
-    push();
+    g.push();
 
     clear();
     g.background(248);
@@ -165,23 +190,21 @@ function drawScene(g) {
     // generate pebbles
     if (focusMode) {
         if(focusIdx >= 0) {
-            pebbles[focusIdx].drawFocus();
+            pebbles[focusIdx].drawFocus(g);
+            reader_container.style.pointerEvents = "auto";
             // loadContent(focusIdx);
         } else {
             // loadContent(focusIdx);
         } 
+        drawInkDots(g);
     } else {
         drawPebbles(g);
         drawCoordinates(g);
-    }
-
-    if (focusMode) {
-        reader_container.style.pointerEvents = "auto";
-    } else {
         reader_container.style.pointerEvents = "none";
+        
     }
 
-    pop();
+    g.pop();
 }
 
 function recordActivity(e) {
@@ -194,12 +217,15 @@ function recordActivity(e) {
 }
 
 function drawCoordinates(g) {
-    push();
+    g.push();
 
     // set space
     let padding = 30;
     let tickLength = 5;
     let labelOffset = 5;
+
+    let w = g.width;
+    let h = g.height;
 
     // reset drop shadow
     // g.drawingContext.shadowOffsetX = 0;
@@ -209,22 +235,22 @@ function drawCoordinates(g) {
     // draw axes and labels
     g.stroke(0);
     g.strokeWeight(1);
-    g.line(padding, height - padding, width - padding, height - padding); // x-axis
-    g.line(padding, padding, padding, height - padding); // y-axis
+    g.line(padding, h - padding, w - padding, h - padding); // x-axis
+    g.line(padding, padding, padding, h - padding); // y-axis
     g.textSize(10);
     g.fill(0);
 
-    var year_u = (width - padding * 2) / ((years.length + 1) * 5); // segment unit of 1 year
-    var region_u = (height - padding * 2) / regions.length; // segment unit of 1 region
+    var year_u = (w - padding * 2) / ((years.length + 1) * 5); // segment unit of 1 year
+    var region_u = (h - padding * 2) / regions.length; // segment unit of 1 region
     
     for (let i = 0; i < years.length; i += 1) {
         // draw tick marks
         g.stroke(0);
         g.strokeWeight(1);
-        g.line(padding + (i + 1) * 5 * year_u, height - padding, padding + (i + 1) * 5 * year_u, height - padding - tickLength);
+        g.line(padding + (i + 1) * 5 * year_u, h - padding, padding + (i + 1) * 5 * year_u, h - padding - tickLength);
         // draw labels
         g.noStroke();
-        g.text(years[i],padding + (i + 1) * 5 * year_u - 10, height - 17);
+        g.text(years[i],padding + (i + 1) * 5 * year_u - 10, h - 17);
     }
     
     for (let j = 0; j < regions.length; j += 1) {
@@ -240,8 +266,8 @@ function drawCoordinates(g) {
     // draw crosshair
     g.stroke(150);
     g.strokeWeight(1);
-    dashedLine(g, mouseX, padding, 0, mouseX, height - padding, 0);
-    dashedLine(g, padding, mouseY, 0, width - padding, mouseY, 0);
+    dashedLine(g, mouseX, padding, mouseX, h - padding);
+    dashedLine(g, padding, mouseY, w - padding, mouseY);
     // g.line(mouseX, padding, mouseX, height - padding);
     // g.line(padding, mouseY, width - padding, mouseY);
 
@@ -254,16 +280,26 @@ function drawCoordinates(g) {
     let yVal = regions[yIdx];
     g.fill(150);
     g.noStroke();
-    g.text(`(${xVal}, ${yVal})`, mouseX + 10, mouseY - 10);
+    let p = pointedObject(mouseX, mouseY);
+    if (p === null) {
+        g.text(`(${xVal}, ${yVal})`, mouseX + 10, mouseY - 10);
+    } else {
+        let tt = (lang === "en" ? works[p.idx].title.en : works[p.idx].title.cn) + ', ';
+        g.text(`(${tt}${works[p.idx].pubyear}, ${works[p.idx].region})`, mouseX + 10, mouseY - 10);
+    }
     
-    pop();
+    
+    
+    g.pop();
 }
 
 function drawPebbles(g) {
+    let w = g.width;
+    let h = g.height;
 
     let padding = 30;
-    var year_u = (width - padding * 2) / ((years.length + 1) * 5); // segment unit of 1 year
-    var region_u = (height - padding * 2) / regions.length; // segment unit of 1 region
+    var year_u = (w - padding * 2) / ((years.length + 1) * 5); // segment unit of 1 year
+    var region_u = (h - padding * 2) / regions.length; // segment unit of 1 region
 
     // reset drop shadow
     // g.drawingContext.shadowOffsetX = 0;
@@ -274,11 +310,13 @@ function drawPebbles(g) {
         for (let i = 0; i < pebbles.length; i++) {
             let p = pebbles[i];
             let x = (works[i].pubyear - 1985) * year_u + padding;
-            x = min(x, width - _pu - 60);
+            x = min(x, w - _pu - 60);
             x = max(x, _pu + 60);
             let y = (regions.indexOf(works[i].region) + 0.5) * region_u + padding + (i - 6) * 10;
-            y = min(y, height - _pu - 60);
+            y = min(y, h - _pu - 60);
             y = max(y, _pu + 60);
+
+            let banner_height = banner.getBoundingClientRect().height;
 
             p.draw(g, x, y);
 
@@ -291,10 +329,18 @@ function drawPebbles(g) {
     
 }
 
+function drawInkDots(g) {
+    for (let d of inkdots) {
+        d.draw(g);
+    }
+}
+
 function windowResized() {
     let w = windowWidth > minWidth ? windowWidth : minWidth;
     let h = main.getBoundingClientRect().height > minHeight ? main.getBoundingClientRect().height : minHeight;
     resizeCanvas(w, h);
+
+    p5Layer.resizeCanvas(w, h);
     
     let banner_height = banner.getBoundingClientRect().height;
     reader_container.style.height = `calc(100% - ${banner_height}px)`;
@@ -329,12 +375,15 @@ function showLabel(p) {
 
     } 
     else {
+        document.body.style.cursor = "none";
         title.innerHTML = `<p></p>`;
         document.body.style.cursor = "default";
     }
 }
 
 function loadContent(i) {
+    console.log(works[i]);
+    document.body.style.cursor = "auto";
 
     if (i >= 0) {
         focusMode = true;
@@ -383,6 +432,14 @@ function loadContent(i) {
         
     reader.style.display = "block";
 
+    let ccds = document.querySelectorAll(".ccd");
+    ccds.forEach(ccd => {
+        ccd.addEventListener("mouseover", e => {
+            console.log("ccd");
+            ccd.innerHTML = "🐊";
+        });
+    });
+
 }
 
 function parseContent(content) {
@@ -417,6 +474,8 @@ function loadHome() {
     back_btn.style.display = "none";
 
     reader_container.style.pointerEvents = "none";
+
+    inkdots = [];
 }
 
 function loadAbout() {
@@ -428,7 +487,7 @@ function loadAbout() {
 
     reader_container.style.pointerEvents = "auto";
 
-    // console.log(about_content);
+    inkdots = [];
         
 }
 
@@ -474,16 +533,14 @@ function toggleLang(l) {
     }
 }
 
-function dashedLine(g, x1, y1, z1, x2, y2, z2, dash = 3, gap = 4) {
+function dashedLine(g, x1, y1, x2, y2, dash = 3, gap = 4) {
   let dx = x2 - x1;
   let dy = y2 - y1;
-  let dz = z2 - z1;
-  let dist = sqrt(dx*dx + dy*dy + dz*dz);
+  let dist = sqrt(dx*dx + dy*dy);
 
   let steps = dist / (dash + gap);
   let vx = dx / dist;
   let vy = dy / dist;
-  let vz = dz / dist;
 
   for (let i = 0; i < steps; i++) {
     let start = i * (dash + gap);
@@ -492,10 +549,8 @@ function dashedLine(g, x1, y1, z1, x2, y2, z2, dash = 3, gap = 4) {
     g.line(
       x1 + vx * start,
       y1 + vy * start,
-      z1 + vz * start,
       x1 + vx * end,
       y1 + vy * end,
-      z1 + vz * end
     );
   }
 }

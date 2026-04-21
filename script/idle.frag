@@ -54,7 +54,7 @@ void main(){
   }
   
 
-  if(u_idle <= 0.0){
+  if(u_idle <= 30.0){
     gl_FragColor = col;
     return;
   }
@@ -133,12 +133,11 @@ vec2  displaced = pos + (-dir + perp * sway) * magnitude;
    * patterns after user idle for a period of time
    *
    */
-  
-  float idleStrength = smoothstep(0.0, 5.0, u_idle);
+  float idleStrength = smoothstep(0.0, 90.0, u_idle);
 
   // float radialPos = (dist * 7.6) * pow(u_idle * 0.2, 0.1);            // spatial frequency of the rings
   // float radialPos = (dist * 2.6) * smoothstep(0.0, 5.0, u_idle);
-  float radialPos = dist * 2.;
+  float radialPos = dist * 2.6;
   // radioposkonkong j空间pipin l频率，越小波纹越大
   float waveFront = u_idle * 0.4;           // how fast the wave front travels outward
   
@@ -151,8 +150,8 @@ vec2  displaced = pos + (-dir + perp * sway) * magnitude;
   // Each channel is a travelling wave radiating from the mouse,
   // with slightly different frequencies so they separate like LCD pressure
   float rWave = sin(pow(radialPos * 1.1, 2.) * 0.40 + noise - waveFront * 0.98) * (0.5 + sin(u_time * 0.6 + 0.4) * 0.5);
-  float gWave = sin(pow(radialPos * 1.1, 1.09) + noise - waveFront * 1.) * (0.7 + 0.3 * sin(u_time * 0.8 + 0.2));
-  float bWave = sin(pow(radialPos * 1.1, 1.12) + noise - waveFront * 1.) * (1.4 + 0.4 * sin(u_time * 0.8 + 0.2));
+  float gWave = sin(pow(radialPos * 0.9, 1.09) + noise - waveFront * 1.) * (0.7 + 0.3 * sin(u_time * 0.8 + 0.2));
+  float bWave = sin(pow(radialPos * 1.1, 1.) + noise - waveFront * 1.) * (1.2 + 0.4 * sin(u_time * 0.8 + 0.2));
 
 
   
@@ -166,10 +165,19 @@ float strength = distFactor * idleStrength * u_idle * 0.1;
   // gl_FragColor = vec4(clamp(shifted, 0.0, 1.0), col.a); 
   
   // apply as difference
-  vec3 blendColor = vec3(rWave, gWave, bWave);
-vec3 shifted    = abs(col.rgb - blendColor * strength);
-gl_FragColor    = vec4(shifted, col.a);
-  
+  // vec3 blendColor = vec3(rWave, gWave, bWave);
+// vec3 shifted    = abs(col.rgb - blendColor * strength);
+// gl_FragColor    = vec4(shifted, col.a);
+
+// apply as screen
+// vec3 blendColor = vec3(rWave, gWave, bWave);
+// vec3 screened = 1.0 - (1.0 - col.rgb) * (1.0 - blendColor * strength);
+// gl_FragColor = vec4(screened, col.a);
+
+// apply with mixed effect
+vec3 blendColor = vec3(rWave, gWave, bWave);
+  vec3 shifted = (1.0 - (1.0 - col.rgb) * (1.0 - blendColor * strength)) * 0.8 + col.rgb + vec3(rWave, gWave, bWave) * strength * 0.2;
+  gl_FragColor = vec4(shifted, col.a);
   
   // gl_FragColor = vec4(255.,255.,255.,col.a);
 }
