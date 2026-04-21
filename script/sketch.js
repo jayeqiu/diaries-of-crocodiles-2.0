@@ -350,8 +350,9 @@ function windowResized() {
 function pointedObject(mx, my) {
     let object = null;
     if (!focusMode) {
-        for (let p of pebbles) {
-            if (p.hovered(mouseX, mouseY)) {
+        for (let i = pebbles.length - 1; i >= 0; i--) {
+            let p = pebbles[i];
+            if (p.hovered(p5Layer)) {
                 hovering = true;
                 object = p;
                 break;

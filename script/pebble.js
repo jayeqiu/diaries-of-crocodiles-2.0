@@ -108,14 +108,20 @@ class Pebble {
 
     }
 
-    hovered(mx, my) {
-        return dist(mx, my, this.x, this.y) < _pu;
+    hovered(g) {
+        // return dist(mx, my, this.x, this.y) < _pu;
+        return this.isMouseInSkewedEllipse(g, _pu * this.stretchX, _pu * this.stretchY);
     }
 
-    isMouseInSkewedEllipse(mx, my, x, y, w, h, skewX, skewY, stretchX, stretchY, rotation) {
+    isMouseInSkewedEllipse(g, w, h) {
+        let skewX = map(mouseX, 0, g.width, -0.5, 0.5);
+        let skewY = map(mouseY, 0, g.height, -0.5, 0.5);
+
+        let rotation = map(mouseX, 0, g.width, -0.17, 0.17);
+
         // Step 1: translate mouse to ellipse-centered space
-        let dx = mx - x;
-        let dy = my - y;
+        let dx = mouseX - this.x;
+        let dy = mouseY - this.y;
 
         // Step 2: undo rotation
         let cos = Math.cos(-rotation);
@@ -133,8 +139,8 @@ class Pebble {
         let uy = (ry - ty * rx) / denom;
 
         // Step 4: undo scale
-        let sx = ux / stretchX;
-        let sy = uy / stretchY;
+        let sx = ux / this.stretchX;
+        let sy = uy / this.stretchY;
 
         // Step 5: standard ellipse hit test
         let a = w / 2;
