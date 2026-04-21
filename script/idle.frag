@@ -22,18 +22,16 @@ void main(){
   
   
 
-  if(u_idle <= 30.0){
+  if(u_idle <=  0.0){
     gl_FragColor = col;
     return;
   }
   
-  float f_idle = u_idle - 30.;
-
   vec2 pixelPos = pos * u_res;
   vec2 mousePos  = vec2(u_mouse.x, u_mouse.y);
   float dist    = length(pixelPos - mousePos);
   vec2  dir        = (pixelPos - mousePos) / max(dist, 1.0);
-  float spreadRadius = f_idle * 30.0; // the main spread speed. Higher = radius grows faster per idle second. At f_idle = 5s, radius is 150px. Change this one first.
+  float spreadRadius = u_idle * 30.0; // the main spread speed. Higher = radius grows faster per idle second. At u_idle = 5s, radius is 150px. Change this one first.
   float distFactor   = pow(exp(-dist * 3.0 / max(spreadRadius, 1.0)), 2.0);
   // dist * 3.0 First factor: the falloff steepness. Higher = sharper edge, slower apparent spread even if radius is large. Lower = softer, blooms faster visually.
   // pow(..., 2.0) contrast between near/far. Higher power = crisper boundary.
@@ -78,7 +76,7 @@ void main(){
 // float inActiveRow = step(0.0, cyclePos) - step(3.0, cyclePos) + mod(floor(sin(rowIndex) * 19.), 5.) * 0.1;  // 1.0 for rows 0–9, 0.0 for rows 10–39
 
 // float band  = floor(rowIndex / 40.0);              // which cycle we're in (for varied shift per band)
-//   float displaceIdleStrength = smoothstep(0.0, 5.0, f_idle * .012);
+//   float displaceIdleStrength = smoothstep(0.0, 5.0, u_idle * .012);
 //   float displaceShift     = sin(band * 2.3) * displaceIdleStrength * 0.1;
   
 //   vec2 displaced = vec2(pos.x + displaceShift * inActiveRow, pos.y);
@@ -91,9 +89,9 @@ void main(){
   /* displacement ripple glitch
    * A travelling sine wave in UV space creates expanding rings of displacement — pixels along wave crests shift outward, troughs shift inward. 
    */
-//   float ring       = sin(dist * 0.08 - f_idle * 3.0);   // travelling ring wave
+//   float ring       = sin(dist * 0.08 - u_idle * 3.0);   // travelling ring wave
 
-//   float displaceIdleStrength = smoothstep(0.0, 5.0, f_idle * .2);
+//   float displaceIdleStrength = smoothstep(0.0, 5.0, u_idle * .2);
 // float pushAmount = ring * distFactor * displaceIdleStrength * 0.01;
 // vec2  displaced  = pos + dir * pushAmount;
 // col        = texture2D(u_tex, displaced);
@@ -113,17 +111,17 @@ void main(){
 float seed2    = fract(sin(dot(cell, vec2(269.5, 183.3))) * 12345.6789);
 
 // Displacement magnitude grows with age, modulated by per-block random
-  float growth = 1.0 - exp(-f_idle * 0.05);   // starts at 0, approaches 1.0 over time
+  float growth = 1.0 - exp(-u_idle * 0.05);   // starts at 0, approaches 1.0 over time
   // Only displace blocks whose seed clears a threshold — sparse, not every block moves
-  float t          = clamp(f_idle / 30.0, 0.0, 1.0);   // normalize age to [0,1] over 30s
+  float t          = clamp(u_idle / 30.0, 0.0, 1.0);   // normalize age to [0,1] over 30s
 float curved     = pow(t, 3.0);                            // accelerates — slow start, fast end
 float threshold  = mix(0.96, 0.60, curved);                // 0.96 → 0.80 (inverted: step filters above)
 
 float active     = step(threshold, seed2);        // ~60% of blocks are active
-  float reach    = f_idle * 4.0;
+  float reach    = u_idle * 4.0;
   float envelope = exp(-dist / max(reach, 1.0));  // full strength at click, falls off with distance
 
-float magnitude = growth * (0.5 + seed) * 0.05 * active * envelope * (sin(f_idle * 0.4) * 0.1 + 0.1);
+float magnitude = growth * (0.5 + seed) * 0.05 * active * envelope * (sin(u_idle * 0.4) * 0.1 + 0.1);
 
 vec2 perp      = vec2(-dir.y, dir.x);                    // perpendicular to radial direction
 float sway     = (seed - 0.5) * 0.4;                     // random lateral bias per block
@@ -138,13 +136,13 @@ vec2  displaced = pos + (-dir + perp * sway) * magnitude;
    * patterns after user idle for a period of time
    *
    */
-  float idleStrength = smoothstep(0.0, 90.0, f_idle);
+  float idleStrength = smoothstep(0.0, 90.0, u_idle);
 
-  // float radialPos = (dist * 7.6) * pow(f_idle * 0.2, 0.1);            // spatial frequency of the rings
-  // float radialPos = (dist * 2.6) * smoothstep(0.0, 5.0, f_idle);
+  // float radialPos = (dist * 7.6) * pow(u_idle * 0.2, 0.1);            // spatial frequency of the rings
+  // float radialPos = (dist * 2.6) * smoothstep(0.0, 5.0, u_idle);
   float radialPos = dist * 2.6;
   // radioposkonkong j空间pipin l频率，越小波纹越大
-  float waveFront = f_idle * 0.4;           // how fast the wave front travels outward
+  float waveFront = u_idle * 0.4;           // how fast the wave front travels outward
   
   float noise = rand(pos + floor(u_time * 0.5)) * 0.4;
   
@@ -161,8 +159,8 @@ vec2  displaced = pos + (-dir + perp * sway) * magnitude;
   
   
 
-    // float strength = distFactor * 1. * idleStrength * f_idle * 0.02 * breathe;
-float strength = distFactor * idleStrength * f_idle * 0.1;
+    // float strength = distFactor * 1. * idleStrength * u_idle * 0.02 * breathe;
+float strength = distFactor * idleStrength * u_idle * 0.1;
   
   
 // apply as multiply

@@ -44,7 +44,7 @@ const regions = ["ML", "TW", "HK"];
 let idleShader;
 let p5Layer;
 
-const IDLE_THRESHOLD_S = 3;
+const IDLE_THRESHOLD_S = 30; // seconds of idle time before the shader effect starts
 let lastActivityTime;
 let lastMouseX, lastMouseY;
 let clickMouseX = 0, clickMouseY = 0;
@@ -394,16 +394,17 @@ function loadContent(i) {
         let html = parseContent(works[i].content);
         reader_content.innerHTML = `${html}`;
 
+        const rawIdleS = (millis() - lastActivityTime) / 1000;
+        const idlePastS = max(0, rawIdleS - IDLE_THRESHOLD_S);
+
         let font = lang === "en" ? "lector" : "zhuzi-mincho";
         let titleText = lang === "en" ? works[i].title.en : works[i].title.cn;
         let authorText = lang === "en" ? works[i].author.en : works[i].author.cn;
         let regionText = lang === "en" ? works[i].publoc.en : works[i].publoc.cn;
-        let idleText = lang === "en" ? `You have spent ${floor(idlePastS)} seconds with me, doing nothing...` : `你已经和我一起发呆了${floor(idlePastS)}秒...`;
         title.innerHTML = `
             <p class="${font}">${titleText}</p>
             <p class="font-size-2 ${font}">${authorText}</p>
-            <p class="font-size-2 ${font}">${regionText}, ${works[i].pubyear}</p>
-            <p class="font-size-2 ${font}"><br><br>${idleText}</p>`;
+            <p class="font-size-2 ${font}">${regionText}, ${works[i].pubyear}</p>`;
             
         about_btn.style.display = "inline-block";
         back_btn.style.display = "inline-block";
