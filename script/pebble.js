@@ -1,7 +1,7 @@
 const _pu = 80;
 
 class Pebble {
-    constructor(idx, x = Pebble.rand(idx), y = Pebble.rand(idx + 1), s = 1.2) {
+    constructor(idx, x = Pebble.rand(idx), y = Pebble.rand(idx + 1), s = 1) {
         // this.type = random(["rock", "paper", "scissors"]);
         this.type = "rock";
         this.rndX = Pebble.rand(idx) * 4 - 2;
