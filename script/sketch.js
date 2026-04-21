@@ -398,10 +398,12 @@ function loadContent(i) {
         let titleText = lang === "en" ? works[i].title.en : works[i].title.cn;
         let authorText = lang === "en" ? works[i].author.en : works[i].author.cn;
         let regionText = lang === "en" ? works[i].publoc.en : works[i].publoc.cn;
+        let idleText = lang === "en" ? `You have spent ${floor(idlePastS)} seconds with me, doing nothing...` : `你已经和我一起发呆了${floor(idlePastS)}秒...`;
         title.innerHTML = `
             <p class="${font}">${titleText}</p>
             <p class="font-size-2 ${font}">${authorText}</p>
-            <p class="font-size-2 ${font}">${regionText}, ${works[i].pubyear}</p>`;
+            <p class="font-size-2 ${font}">${regionText}, ${works[i].pubyear}</p>
+            <p class="font-size-2 ${font}"><br><br>${idleText}</p>`;
             
         about_btn.style.display = "inline-block";
         back_btn.style.display = "inline-block";
