@@ -158,7 +158,7 @@ vec2  displaced = pos + (-dir + perp * sway) * magnitude;
   float gWave = sin(pow(radialPos * 0.9, 1.09) + noise - waveFront * 1.) * (0.7 + 0.3 * sin(u_time * 0.8 + 0.2));
   float bWave = sin(pow(radialPos * 1.1, 1.) + noise - waveFront * 1.) * (1.2 + 0.4 * sin(u_time * 0.8 + 0.2));
 
-
+  
   
 
     // float strength = distFactor * 1. * idleStrength * f_idle * 0.02 * breathe;
@@ -181,7 +181,7 @@ float strength = distFactor * idleStrength * f_idle * 0.1;
 
 // apply with mixed effect
 vec3 blendColor = vec3(rWave, gWave, bWave);
-  vec3 shifted = (1.0 - (1.0 - col.rgb) * (1.0 - blendColor * strength)) * 0.8 + col.rgb + vec3(rWave, gWave, bWave) * strength * 0.2;
+  vec3 shifted = (1.0 - (1.0 - col.rgb) * (1.0 - blendColor * strength)) * 0.9 + col.rgb + vec3(rWave, gWave, bWave) * strength * 0.1;
   gl_FragColor = vec4(shifted, col.a);
   
   // gl_FragColor = vec4(255.,255.,255.,col.a);
