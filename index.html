@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Diaries of Crocodiles</title>
+    <script src="script/pebble.js"></script>
+    
+    <script src="script/rain.js"></script>
+    <script src="script/drop.js"></script>
+    <script src="script/drawGraphics.js"></script>
+    <!-- <script src="main.js"></script> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- constrained writing / conditional rules - how layoput change the meanin g of the text -->
+    <!-- print function -->
+     <!-- pebbling as editing -->
+      <div id="c">
+        <div id="banner">
+            <div id="menu" class="lector font-size-1">
+                <p onclick="loadHome()">
+                    <span id="menu-title-text">Diaries of Crocodiles: Lesbian Literature in Chinese</span> 🐊
+                </p>
+                <p>
+                    <span id="back-btn" onclick="loadHome()">&lt;&lt;&nbsp;&nbsp;Back</span>
+                    
+                    <span id="about-btn" onclick="loadAbout()">About</span>
+                </p>
+            </div>
+            <div id="toggle-lang">
+                <p>
+                    <span id="toggle-en" onclick="toggleLang('en')" class="lector font-size-1 selected">EN</span> 
+                    | 
+                    <span id="toggle-cn" onclick="toggleLang('cn')" class="zhuzi-mincho font-size-1">中</span>
+                </p>
+            </div>
+        </div>
+
+
+
+        <div id="content">
+            <main id="p5"></main>
+            <script src="script/sketch.js" defer></script>
+            
+            <div id="reader-container"">
+                <div id="title"></div>
+                <div id="reader">
+                        <div id="reader-content"></div>
+                </div>
+                <div id="raindrop-container">
+                    <!-- <script src="script/printRain.js" defer></script> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

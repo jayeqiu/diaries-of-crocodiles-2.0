@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Diaries of Crocodiles</title>
+    <script src="pebble.js"></script>
+    <!-- <script src="main.js"></script> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- constrained writing / conditional rules - how layoput change the meanin g of the text -->
+    <!-- print function -->
+     <!-- pebbling as editing -->
+    <div id="c">
+
+      
+        <div id="menu">
+            <p id="home" onclick="loadHome()">
+                <!-- <span id="back">&larr;</span> -->
+                Diaries of Crocodiles: Lesbian Literature in Chinese<br>
+                <a id="about" href="index.html">&lt;&lt; Back to Home</a>
+            </p>
+        </div>
+
+        <div id="content">
+            <main id="p5" onclick="handleCanvasClick()"></main>
+            <script src="sketch.js" defer></script>
+            
+            <div id="t">
+                <!-- <div id="menu">
+                    <div onclick="sortContent('time')"><span>Sort by time</span></div>
+                    <div onclick="sortContent('page')"><span>Sort by page number</span></div>
+                    <div onclick="sortContent('source')"><span>Sort by source</span></div>
+                </div>
+                <div id="contents">
+                    <div onclick="loadContent('GL')"><span>Getting Lost</span></div>
+                    <div onclick="loadContent('LA')"><span>Little Art</span></div>
+                </div> -->
+                <div id="exc-container">
+                    
+                </div>
+                <div id="title"></div>
+                <div id="reader">
+                    <div id="reader-menu">
+                        <div id="reader-idx">
+                            <p>-1</p>
+                        </div>
+                        <div id="reader-btn">
+                            <p id="reader-last">&lt;</p>
+                            <p id="reader-next">&gt;</p>
+                        </div>
+                        
+                    </div>
+                    <div id="reader-content"></div>
+                    <div id="reader-lang">EN | <span id="reader-lang-option">CN</span></div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+    
+</body>
+</html>

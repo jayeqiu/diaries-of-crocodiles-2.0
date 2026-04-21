@@ -1,0 +1,31 @@
+{
+    "backup": [
+        {
+            "title": "Notes: Homosexuality is abnormal? Chinese netizens criticize new internet censorship rules.",
+            "author": "BBC",
+            "region": "ML",
+            "pubyear": "2017",
+            "publoc": "<a href = \"https://www.bbc.com/zhongwen/simp/40627637\">BBC</a>",
+            "genre": "news",
+            "id": "BBC"
+        },
+        {
+            "title": "Notes: People's Daily deleted a post that supported LGBTQ rights.",
+            "author": "Annie Lab",
+            "region": "ML",
+            "pubyear": "2020",
+            "publoc": "<a href = \"https://annielab.org/2020/06/11/%E5%B7%B2%E6%A0%B8%E5%AE%9E-%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5%E5%8F%91%E6%8E%A8%E7%89%B9%E6%94%AF%E6%8C%81%E4%B8%AD%E5%9B%BDlgbtq%E7%BE%A4%E4%BD%93-%E8%AF%A5%E6%8E%A8%E7%89%B9%E5%B7%B2%E8%A2%AB/\">Annie Lab</a>",
+            "genre": "news",
+            "id": "AL"
+        },
+        {
+            "title": "Notes: Chinese Police Detained over 10 Dan Mei Authors",
+            "author": "Wang Yue Mei, New York Times",
+            "region": "ML",
+            "pubyear": "2025",
+            "publoc": "<a href = \"https://cn.nytimes.com/china/20250630/china-boys-love-women/\">New York Times</a>",
+            "genre": "news",
+            "id": "NYT"
+        }
+    ]
+}
