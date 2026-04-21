@@ -44,7 +44,7 @@ const regions = ["ML", "TW", "HK"];
 let idleShader;
 let p5Layer;
 
-const IDLE_THRESHOLD_S = 30; // seconds of idle time before the shader effect starts
+const IDLE_THRESHOLD_S = 5; // seconds of idle time before the shader effect starts
 let lastActivityTime;
 let lastMouseX, lastMouseY;
 let clickMouseX = 0, clickMouseY = 0;
