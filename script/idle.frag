@@ -20,13 +20,6 @@ void main(){
   
   
   
-  
-
-  if(u_idle <=  0.0){
-    gl_FragColor = col;
-    return;
-  }
-  
   vec2 pixelPos = pos * u_res;
   vec2 mousePos  = vec2(u_mouse.x, u_mouse.y);
   float dist    = length(pixelPos - mousePos);
@@ -63,6 +56,13 @@ void main(){
 
 
 
+  
+
+  if(u_idle <=  0.0){
+    gl_FragColor = col;
+    return;
+  }
+  
   
   /* 
    * displacement line glitch
